@@ -1,0 +1,7 @@
+data/raw/
+data/interim/
+vendor/maxent.jar
+.pytest_cache/
+.ipynb_checkpoints/
+*.pyc
+__pycache__/

@@ -1,0 +1,16 @@
+species,stage,records
+quercus-robur,gbif_records_returned,9000
+quercus-robur,passing_qc_gates,5543
+quercus-robur,one_record_per_grid_cell,1836
+quercus-robur,with_climate_values,1835
+quercus-robur,used_in_model,1835
+ursus-arctos,gbif_records_returned,9000
+ursus-arctos,passing_qc_gates,3569
+ursus-arctos,one_record_per_grid_cell,1418
+ursus-arctos,with_climate_values,1418
+ursus-arctos,used_in_model,1418
+welwitschia-mirabilis,gbif_records_returned,974
+welwitschia-mirabilis,passing_qc_gates,668
+welwitschia-mirabilis,one_record_per_grid_cell,92
+welwitschia-mirabilis,with_climate_values,91
+welwitschia-mirabilis,used_in_model,91

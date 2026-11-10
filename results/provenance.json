@@ -1,0 +1,61 @@
+{
+  "generated_utc": "2026-11-10T18:24:39+00:00",
+  "python": "3.11.14",
+  "platform": "Linux-6.17.0-35-generic-x86_64-with-glibc2.39",
+  "config": {
+    "schemes": [
+      "random",
+      "spatial"
+    ],
+    "models": [
+      "svm",
+      "rf",
+      "maxent",
+      "xgboost"
+    ],
+    "max_records": 9000,
+    "background": 2000,
+    "max_presence": 2000,
+    "n_splits": 5,
+    "seed": 42,
+    "correlation_threshold": 0.8,
+    "max_uncertainty_m": 10000.0,
+    "min_year": 1950
+  },
+  "species": [
+    {
+      "key": "quercus-robur",
+      "scientific_name": "Quercus robur",
+      "bbox": [
+        -12.0,
+        34.0,
+        50.0,
+        71.0
+      ],
+      "gbif_count_with_coordinates": 1715342
+    },
+    {
+      "key": "ursus-arctos",
+      "scientific_name": "Ursus arctos",
+      "bbox": [
+        -12.0,
+        34.0,
+        50.0,
+        71.0
+      ],
+      "gbif_count_with_coordinates": 52800
+    },
+    {
+      "key": "welwitschia-mirabilis",
+      "scientific_name": "Welwitschia mirabilis",
+      "bbox": [
+        10.0,
+        -30.0,
+        18.0,
+        -16.0
+      ],
+      "gbif_count_with_coordinates": 974
+    }
+  ],
+  "maxent_jar": "/home/hans/Projects/Species distribution model/vendor/maxent.jar"
+}

@@ -1,0 +1,22 @@
+species,gate,records_in,records_out,records_removed,retained_pct,rule
+quercus-robur,coordinate_valid,9000,9000,0,100.0,"latitude and longitude present, in range, not the null island pair"
+quercus-robur,inside_study_extent,9000,8489,511,94.3,"inside the calibration extent (-12.0, 34.0, 50.0, 71.0)"
+quercus-robur,no_fatal_gbif_issue,8489,8489,0,100.0,"excludes zero, swapped, negated, out-of-range and country-mismatched coordinates"
+quercus-robur,basis_of_record_accepted,8489,8489,0,100.0,"specimens, observations and machine observations only"
+quercus-robur,year_recent,8489,8489,0,100.0,"recorded in 1950 or later, matching the climate normal period"
+quercus-robur,coordinate_uncertainty,8489,8471,18,99.8,stated uncertainty at most 10 km; 1049 records carry no value and are retained under the standard profile
+quercus-robur,duplicate_coordinates,8471,5543,2928,65.4,one record per unique coordinate pair
+ursus-arctos,coordinate_valid,9000,9000,0,100.0,"latitude and longitude present, in range, not the null island pair"
+ursus-arctos,inside_study_extent,9000,5258,3742,58.4,"inside the calibration extent (-12.0, 34.0, 50.0, 71.0)"
+ursus-arctos,no_fatal_gbif_issue,5258,5258,0,100.0,"excludes zero, swapped, negated, out-of-range and country-mismatched coordinates"
+ursus-arctos,basis_of_record_accepted,5258,5216,42,99.2,"specimens, observations and machine observations only"
+ursus-arctos,year_recent,5216,5216,0,100.0,"recorded in 1950 or later, matching the climate normal period"
+ursus-arctos,coordinate_uncertainty,5216,4099,1117,78.6,stated uncertainty at most 10 km; 2717 records carry no value and are retained under the standard profile
+ursus-arctos,duplicate_coordinates,4099,3569,530,87.1,one record per unique coordinate pair
+welwitschia-mirabilis,coordinate_valid,974,974,0,100.0,"latitude and longitude present, in range, not the null island pair"
+welwitschia-mirabilis,inside_study_extent,974,870,104,89.3,"inside the calibration extent (10.0, -30.0, 18.0, -16.0)"
+welwitschia-mirabilis,no_fatal_gbif_issue,870,870,0,100.0,"excludes zero, swapped, negated, out-of-range and country-mismatched coordinates"
+welwitschia-mirabilis,basis_of_record_accepted,870,870,0,100.0,"specimens, observations and machine observations only"
+welwitschia-mirabilis,year_recent,870,843,27,96.9,"recorded in 1950 or later, matching the climate normal period"
+welwitschia-mirabilis,coordinate_uncertainty,843,750,93,89.0,stated uncertainty at most 10 km; 190 records carry no value and are retained under the standard profile
+welwitschia-mirabilis,duplicate_coordinates,750,668,82,89.1,one record per unique coordinate pair
