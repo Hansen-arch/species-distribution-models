@@ -2,16 +2,17 @@
 
 MaxEnt, random forest, an RBF support vector machine and XGBoost, trained on the
 same GBIF records, the same background sample and the same folds, then scored on
-the same metrics. The question is not which model wins in general, it is which
-model wins in a given data situation, and how much of a reported win is an
-artefact of the validation scheme.
+the same metrics.
 
-**Short answer, from this panel:** maximum entropy is the safest choice when
-presences are scarce (3 of 4 models fail on the 91-record case while MaxEnt holds
-0.725 AUC), the tree ensembles take over once there are a thousand or more
-records, and the RBF machine is the most expensive per unit of accuracy and the
-first to fail at small sample sizes. Every model loses 0.10 to 0.17 AUC when
-random folds are replaced by spatial blocks, most of all XGBoost.
+The reference result is spatial block cross-validation, because random folds
+measure how well a model interpolates between neighbouring records, and the
+question here is what the ranking looks like once that advantage is removed.
+
+The panel ran on three species whose modelled presence counts differ by a factor
+of twenty (91, 1 418 and 1 835 grid cells). On the smallest case MaxEnt scores
+0.725 AUC where the other three fall between 0.492 and 0.654. On the largest the
+four models sit within 0.031 AUC of each other. Replacing random folds with
+spatial blocks costs every model between 0.10 and 0.17 AUC.
 
 ![Model performance](results/figures/metrics.png)
 
@@ -29,8 +30,7 @@ calibration split inside each training fold.
 
 Cells read as AUC / TSS. Bold marks the best value in the row.
 
-Under stratified random folds the same models score 0.86 to 0.92 AUC, and the
-ordering changes. That gap is the first result of the study:
+The same models under stratified random folds, where the ordering is different and every model scores between 0.86 and 0.92 AUC:
 
 | Model | Mean AUC, random folds | Mean AUC, spatial blocks | Inflation |
 |---|---|---|---|
@@ -39,9 +39,9 @@ ordering changes. That gap is the first result of the study:
 | SVM (RBF) | 0.865 | 0.735 | +0.131 |
 | XGBoost | 0.883 | 0.715 | +0.168 |
 
-The flexible learners gain most from neighbouring records landing in different
-folds. A study that reports only random-fold AUC will rank XGBoost above MaxEnt;
-with spatial blocks the order reverses.
+The three flexible learners gain most when neighbouring records can land in
+different folds. A study reporting only random-fold AUC ranks XGBoost above
+MaxEnt; under spatial blocks the order reverses.
 
 ## The three cases
 
@@ -51,8 +51,8 @@ with spatial blocks the order reverses.
 | Ursus arctos | same extent | 9 000 pulled (52 800) | 3 569 | 1 418 | 1 418 | moderate effort, fragmented |
 | Welwitschia mirabilis | Namib, 8 by 14 degrees | 974 (all) | 668 | 92 | 91 | low effort, narrow endemic |
 
-Two species share an extent so their background pool is identical and the
-difference between them is the presences alone.
+Two species share an extent, so their background pool is identical and the only
+difference between them is the presences.
 
 ## Method
 
@@ -89,7 +89,8 @@ BIO02, BIO03, BIO04, BIO06, BIO08, BIO10, BIO13, BIO14, BIO15 and elevation.
 
 **Background.** 2 000 cells drawn once per species from the eligible cells of the
 extent and given to every model, including MaxEnt, which normally samples its own.
-That removes a confound at the cost of handicapping MaxEnt slightly.
+That removes a confound, at some cost to MaxEnt, which normally samples its own
+background.
 
 **Models.** Fixed hyperparameters, chosen a priori and never tuned against the
 evaluation folds: MaxEnt with auto features and beta 1 through the reference
@@ -105,29 +106,29 @@ predicted suitable at that threshold.
 
 ## What the comparison shows
 
-**With enough presences, the choice barely matters.** On the oak, 1 835 presences
-and ten predictors, the four models span 0.031 AUC and 0.05 TSS. Any of them
-would support the same sentence about the species' climatic niche. MaxEnt gets
-the best TSS and random forest the best AUC, which is noise at this sample size,
-not a ranking.
+On the oak, with 1 835 presences and ten predictors, the four models are within
+0.031 AUC and 0.05 TSS of each other. MaxEnt has the highest TSS (0.480), random
+forest the highest AUC (0.813). At this sample size that difference is fold
+noise, and all four predictions support the same description of the oak's
+climatic niche.
 
-**With few presences, it matters a lot.** On 91 records the spread is 0.233 AUC.
-MaxEnt holds 0.725; XGBoost falls to 0.492, which is chance. A boosted ensemble
-with 400 rounds has more parameters than that dataset can support, and the
-four-fold result (one block lacked enough presences to score) carries a standard
-deviation of 0.299. Reporting a single number for XGBoost here would be
-dishonest; the honest statement is that it did not converge on a usable model.
+The 91-record case behaves differently. The spread there is 0.233 AUC, with
+MaxEnt at 0.725 and XGBoost at 0.492, which is chance. 400 boosting rounds exceed
+what that dataset can support, and the four-fold result (one block
+held too few presences to score) carries a standard deviation of 0.299. I would
+not report a single AUC for XGBoost on that species; it did not fit a usable
+model.
 
-**The RBF machine degrades in a specific way.** At 91 presences it predicted the
-entire extent suitable (area fraction 1.000), so its TSS of 0.072 comes from
-calling everything present. Its AUC gain from 50 to 1 835 training presences is
-the steepest in the panel (+0.169), which fits the model: a kernel machine needs
-points to define a boundary, and until it has them it does not find one.
+The SVM fails in a way worth naming. At 91 presences it predicted the entire
+extent suitable (area fraction 1.000), so its TSS of 0.072 comes from calling
+everything present. Its AUC gain between 50 and 1 835 training presences is the
+largest in the panel (+0.169), which fits the model: a kernel machine needs
+points before it can place a boundary, and at 91 it has almost none.
 
-**The learning curves say where each model turns on.** MaxEnt is already at 0.707
-AUC with 50 oak presences and reaches 0.784 at full sample, while random forest
-climbs from 0.636 to 0.774. Below roughly 100 presences the ranking favours
-MaxEnt on both species where that range is measurable.
+The learning curves locate the point where each model starts to work. MaxEnt is
+at 0.707 AUC with 50 oak presences and 0.784 with all of them, while random
+forest goes from 0.636 to 0.774 over the same range. Below about 100 presences
+MaxEnt leads on both species where that range is measurable.
 
 ![Learning curves](results/figures/learning_curve.png)
 
@@ -135,45 +136,44 @@ MaxEnt on both species where that range is measurable.
 
 | Situation | Start with | Why, from this panel |
 |---|---|---|
-| Under about 100 usable presences | MaxEnt | 0.725 against 0.492 to 0.654 for the alternatives; it is the only model that stays coherent at that sample size |
-| 100 to 500 presences | MaxEnt, then random forest | the curves cross near 100; both are defensible, random forest has lower variance across folds once it has data |
+| Under about 100 usable presences | MaxEnt | 0.725 against 0.492 to 0.654 here, and it is the only model whose predictions are not degenerate at that size |
+| 100 to 500 presences | MaxEnt, then random forest | the curves cross near 100; both are defensible, and random forest has lower variance across folds once it has data |
 | Several thousand presences, wide range | Random forest or MaxEnt | 0.813 against 0.808 on the oak, TSS 0.480 for MaxEnt; pick on what you need downstream, not on AUC |
-| Clustered, fragmented records | Random forest | 0.856 on the bear, the best in the panel; the model tolerates the gaps between populations |
+| Clustered, fragmented records | Random forest | 0.856 on the bear, the highest in the panel; it tolerates the gaps between populations |
 | Many correlated predictors | Tree ensembles | invariant to monotone rescaling; the SVM is the most sensitive to the correlation that pruning leaves behind |
 | A probability for policy or reporting | MaxEnt | cloglog output on a 0 to 1 scale; tree vote fractions are not probabilities |
 | Prediction into a novel climate | MaxEnt | clamping limits extrapolation; trees fall back to the nearest observed leaf and cannot extrapolate at all |
 | Many species, tight compute budget | Random forest | 6 to 21 s per species here against 35 to 73 s for MaxEnt |
 | Fastest raw fit, large data | XGBoost | 4.6 to 8.1 s, but it needs the presences to justify its capacity |
 
-Two cautions that follow from the numbers rather than the literature. First,
-random-fold AUC overstates every model by 0.10 to 0.17, so comparisons built on
-it are comparisons of interpolation ability. Second, an AUC of 0.49 is not a
-model that is "slightly worse"; it is a model with no signal, and it should be
-reported as a failure rather than averaged into a mean.
+Two points follow from these numbers rather than from the literature. Random-fold
+AUC overstates every model by 0.10 to 0.17, so a comparison built on it compares
+interpolation ability. And an AUC of 0.49 means no signal: it belongs in a report
+as a failure, not averaged into a mean.
 
 ## Limitations
 
-- **10 arc minute resolution sets a floor on what can be modelled.** A candidate
+- 10 arc minute resolution sets a floor on what can be modelled. A candidate
   narrow endemic, *Nepenthes rajah*, has 80 GBIF records, 71 of them recent, all
   at a stated 31 km precision. After thinning only two grid cells remain, so no
   model was fitted. The species was replaced by *Welwitschia mirabilis*, which
   has 974 records and a median stated uncertainty of 8 m.
-- **9 000 records is a cap, not the population.** The oak has 1.7 M records.
-  Cell thinning makes the cap tolerable, but it is not a random sample of the
-  index, and the ordering of the search API is not random either.
-- **One background size, no bias correction.** Real sampling effort is uneven,
-  and no target-group background or bias file is used here.
-- **Hyperparameters are fixed a priori.** Tuning per fold would leak into the
+- 9 000 records is a cap, not the population. The oak has 1.7 M records. Cell
+  thinning makes the cap tolerable, but it is not a random sample of the index,
+  and the ordering of the search API is not random either.
+- One background size, no bias correction. Real sampling effort is uneven, and no
+  target-group background or bias file is used here.
+- Hyperparameters are fixed a priori. Tuning per fold would leak into the
   comparison, so the table measures each algorithm's default behaviour, not its
   best behaviour.
-- **The small-N case is four folds, not five.** One spatial block held too few
+- The small-N case is four folds, not five. One spatial block held too few
   presences, which is why the standard deviations there are wide.
-- **AUC is comparable within a species, never across species**, because the
-  extent and the background differ.
-- **Predicted area is descriptive.** It depends on the threshold and the extent,
-  and it is not an accuracy measure.
-- **No Boyce index, no partial dependence, no calibration curves.** The panel
-  answers the discrimination question only.
+- AUC is comparable within a species, never across species, because the extent
+  and the background differ.
+- Predicted area is descriptive. It depends on the threshold and the extent, and
+  it is not an accuracy measure.
+- No Boyce index, no partial dependence, no calibration curves. The panel answers
+  the discrimination question only.
 
 ## Reproducing
 
@@ -195,9 +195,10 @@ A single case, faster:
 ```
 
 MaxEnt builds a Swing window even in batch mode, so a machine with no X display
-needs one. The pipeline prefixes the Java call with `xvfb-run -a` when `DISPLAY`
-is unset and `xvfb` is installed; on Debian and on Colab that is
-`apt-get install -y xvfb`.
+needs one. The pipeline prefixes the Java call with `xvfb-run -a` whenever
+`xvfb-run` is installed, rather than testing `DISPLAY`, because a Colab VM can
+advertise `DISPLAY=:0` with no X server behind it. On Debian and on Colab that is
+`apt-get install -y xvfb xauth`.
 
 On a Colab VM, which uploads the project, installs what is missing, runs, and
 pulls the results back:
